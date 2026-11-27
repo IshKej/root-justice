@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets/root-justice-logo.svg" alt="Root Justice" width="320">
+  <img src="assets/root-justice-logo.png" alt="Root Justice" width="320">
 </p>
 
 <h1 align="center">Root Justice</h1>
