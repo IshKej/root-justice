@@ -78,8 +78,11 @@ def generate_key(key_path: str, *, nbytes: int = DEFAULT_KEY_BYTES) -> bytes:
     key = os.urandom(nbytes)
     path = Path(key_path)
     path.parent.mkdir(parents=True, exist_ok=True)
-    # Create restrictively where the platform honors it.
-    fd = os.open(str(path), os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600)
+    # Create restrictively where the platform honors it. O_BINARY is required on
+    # Windows: without it os.open defaults to TEXT mode and os.write translates
+    # 0x0A key bytes to \r\n, corrupting the binary key (no-op flag on POSIX).
+    flags = os.O_WRONLY | os.O_CREAT | os.O_TRUNC | getattr(os, "O_BINARY", 0)
+    fd = os.open(str(path), flags, 0o600)
     try:
         os.write(fd, key)
     finally:
