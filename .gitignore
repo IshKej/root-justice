@@ -1,0 +1,31 @@
+# Python bytecode / caches
+__pycache__/
+*.pyc
+
+# Build / distribution artifacts
+build/
+dist/
+*.egg-info/
+
+# Virtual environments
+.venv/
+venv/
+
+# Generated runtime output (never commit operational evidence)
+evidence_out/
+*.sqlite3
+*.sig.json
+*.jsonl
+
+# Tool caches
+.mypy_cache/
+.ruff_cache/
+
+# Internal orchestration / collaboration notes — NOT for the public repo
+claude-collab/
+tmp_*/
+
+# Keep committed golden test-fixture ledgers despite the *.jsonl rule above,
+# without un-ignoring bytecode/caches under tests/.
+!tests/**/*.jsonl
+

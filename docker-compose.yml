@@ -1,0 +1,45 @@
+# Root Justice / Artex Antidote edge shield — hardened, log-only deployment.
+#
+# Defensive posture:
+#   * read-only root filesystem (the image is immutable at runtime)
+#   * no-new-privileges (a child process can never gain more than this one has)
+#   * all Linux capabilities dropped
+#   * a single named volume for the append-only evidence ledger, which is the
+#     only path the process needs to write.
+services:
+  shield:
+    build: .
+    image: root-justice:local
+    # Log-only is the image default (no --enforce); nothing here turns it on.
+    read_only: true
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    # The container binds 0.0.0.0:8080 internally (required for Docker port
+    # forwarding to reach it). Publish it on the HOST LOOPBACK only, to match the
+    # "loopback by default" story and to keep the unauthenticated /dashboard off
+    # the network. To front a real app, put this behind your own TLS/reverse
+    # proxy and change the mapping deliberately (e.g. "0.0.0.0:8080:8080").
+    ports:
+      - "127.0.0.1:8080:8080"
+    volumes:
+      # Durable, writable home for the evidence ledger only.
+      - evidence:/app/evidence_out
+    # /tmp needs to be writable even with a read-only rootfs (stdlib temp use).
+    tmpfs:
+      - /tmp
+    restart: unless-stopped
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - "import socket,sys; s=socket.socket(); s.settimeout(2); sys.exit(0 if s.connect_ex(('127.0.0.1',8080))==0 else 1)"
+      interval: 30s
+      timeout: 3s
+      start_period: 5s
+      retries: 3
+
+volumes:
+  evidence:

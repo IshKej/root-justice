@@ -1,0 +1,57 @@
+[Unit]
+Description=Root Justice edge shield (defensive detection, containment + evidence)
+Documentation=https://github.com/qanvass/root-justice
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+# Runs the detection/evidence shield. Default is LOG-ONLY and loopback-bound;
+# an operator opts into enforcement and a public bind in /etc/root-justice/root-justice.env.
+EnvironmentFile=/etc/root-justice/root-justice.env
+# NOTE on systemd variable syntax: braced "${VAR}" expands to a SINGLE argv
+# token (quotes preserved), which is correct for single-value fields like the
+# host, port and evidence path. RJ_EXTRA_ARGS holds MULTIPLE flags, so it must
+# use the UNBRACED "$VAR" form, which systemd word-splits into separate argv
+# tokens. Using "${RJ_EXTRA_ARGS}" here would pass e.g. "--enforce --db x" as one
+# token and every enforcing deploy would fail to start.
+ExecStart=/opt/root-justice/venv/bin/root-justice serve \
+    --host ${RJ_HOST} --port ${RJ_PORT} \
+    --evidence ${RJ_EVIDENCE} $RJ_EXTRA_ARGS
+Restart=on-failure
+RestartSec=3
+
+# --- Least-privilege hardening ---
+# A transient, unprivileged, isolated service account (no shell, no home).
+DynamicUser=yes
+# Only the evidence directory is writable; everything else is read-only.
+# StateDirectory creates and owns /var/lib/root-justice for the DynamicUser.
+# RJ_EVIDENCE is NOT re-declared here: the operator's EnvironmentFile value (see
+# root-justice.env, defaulting to /var/lib/root-justice/evidence_ledger.jsonl) is
+# authoritative. Declaring Environment= after EnvironmentFile= would silently
+# override the env-file value and send evidence to an unexpected path.
+StateDirectory=root-justice
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+PrivateDevices=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+RestrictAddressFamilies=AF_INET AF_INET6
+RestrictNamespaces=yes
+LockPersonality=yes
+MemoryDenyWriteExecute=yes
+# This service never needs elevated capabilities: it only listens and writes logs.
+CapabilityBoundingSet=
+AmbientCapabilities=
+SystemCallFilter=@system-service
+SystemCallErrorNumber=EPERM
+# Resource caps so an attack flood cannot exhaust the host.
+LimitNOFILE=16384
+MemoryMax=512M
+TasksMax=256
+
+[Install]
+WantedBy=multi-user.target

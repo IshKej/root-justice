@@ -1,0 +1,45 @@
+# Keep the build context small and free of local/dev cruft.
+.git
+.gitignore
+.github
+
+# Python build/runtime artifacts
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Local evidence output / generated bundles (never baked into the image)
+evidence_out/
+*.jsonl
+
+# Tests and docs are not needed at runtime
+tests/
+docs/
+skills/
+claude-collab/
+deploy/
+
+# Editor / OS noise
+.vscode/
+.idea/
+*.swp
+.DS_Store
+Thumbs.db
+
+# The Docker files themselves
+Dockerfile
+docker-compose.yml
+.dockerignore

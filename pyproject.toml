@@ -1,0 +1,47 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "root-justice"
+version = "0.1.0"
+description = "Root Justice / Artex Antidote: defensive 2:1 blue-team swarm, origin attribution, and federal incident reporting."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+license-files = ["LICENSE"]
+authors = [{ name = "Root Justice" }]
+keywords = [
+    "security", "cybersecurity", "defensive-security", "blue-team", "soc", "dfir",
+    "waf", "web-application-firewall", "intrusion-detection", "ids", "edr",
+    "scanner-detection", "bot-detection", "honeypot", "tarpit", "canary",
+    "ai-security", "llm-security", "prompt-injection-defense", "agentic-ai",
+    "threat-intelligence", "threat-hunting", "incident-response", "attribution",
+    "stix", "taxii", "crowdsec", "coraza", "modsecurity", "owasp",
+    "rdap", "asn", "ja3", "fingerprinting", "chain-of-custody", "forensics",
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Information Technology",
+    "Topic :: Security",
+    "Programming Language :: Python :: 3",
+]
+# Standard-library only by design (design §4.1): no runtime third-party deps.
+dependencies = []
+
+[project.optional-dependencies]
+# Optional: official STIX validation and live Coraza/CrowdSec bouncers.
+stix = ["stix2-validator>=3.0"]
+
+[project.scripts]
+root-justice = "artex_antidote.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/qanvass/root-justice"
+
+[tool.setuptools]
+packages = ["artex_antidote"]
+
+[tool.setuptools.package-data]
+# Ship the PEP 561 marker so downstream type checkers see the package as typed.
+artex_antidote = ["py.typed"]
