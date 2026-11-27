@@ -27,10 +27,11 @@
   <path class="ink" d="M560 835 l70 42 l-70 42 v-34 l18 -8 l-18 -8 z" />
   <rect class="ink" x="648" y="905" width="70" height="20" />
 
-  <!-- Wordmark -->
-  <text x="500" y="1055" text-anchor="middle" class="ink"
+  <!-- Wordmark (textLength pins it inside the canvas so it never clips) -->
+  <text x="500" y="1050" text-anchor="middle" class="ink"
         font-family="'Arial Black', 'Helvetica Neue', Arial, sans-serif"
-        font-size="150" font-weight="900" letter-spacing="2">ROOT JUSTICE</text>
+        font-size="120" font-weight="900"
+        textLength="860" lengthAdjust="spacingAndGlyphs">ROOT JUSTICE</text>
   <!-- Red underline -->
-  <polygon class="red" points="150,1085 850,1085 830,1105 170,1105" />
+  <polygon class="red" points="120,1082 880,1082 862,1104 138,1104" />
 </svg>
